@@ -45,7 +45,15 @@ def _chat_completion(messages, max_tokens):
     response.raise_for_status()
     payload = response.json()
 
-    return payload["choices"][0]["message"]["content"].strip()
+    try:
+        content = payload["choices"][0]["message"]["content"]
+    except (KeyError, IndexError, TypeError) as e:
+        raise ValueError("Invalid OpenRouter response structure: missing choices[0].message.content") from e
+
+    if not isinstance(content, str):
+        raise ValueError("Invalid OpenRouter response structure: content is not a string")
+
+    return content.strip()
 
 def handshake():
     try:
@@ -89,6 +97,6 @@ def use_chat(msg):
 
     except Exception as e:
         print(f"LLM call failed: {e}")
-        llm_response = False
+        llm_response = None
 
     return llm_response

@@ -58,13 +58,33 @@ def chat_flow(msg, header, allow_microservice=True):
     contexted_msg = str(additional_context) + msg    
 
     raw_llm_responce = use_chat(contexted_msg)
-    llm_response = clean_llm_json(raw_llm_responce)
+
+    try:
+        llm_response = clean_llm_json(raw_llm_responce)
+    except (ValueError, json.JSONDecodeError, TypeError) as parse_error:
+        print(f"LLM JSON parse failed, using conversation fallback: {parse_error}")
+        llm_response = {
+            "header": {
+                "routing": "conversation",
+                "microservice": "",
+            },
+            "llmMsg": "Wystapil problem techniczny po mojej stronie. Sprobuj prosze ponownie.",
+            "conv_summary": ""
+        }
 
     print(llm_response)
 
-    route = llm_response["header"]["routing"]
-    microservice_route = llm_response["header"]["microservice"]
-    llm_message = llm_response["llmMsg"]
+    header_obj = llm_response.get("header", {})
+    route = header_obj.get("routing", "conversation")
+    microservice_route = header_obj.get("microservice", "")
+    llm_message = llm_response.get("llmMsg", "")
+
+    if not isinstance(route, str) or not route:
+        route = "conversation"
+    if not isinstance(microservice_route, str):
+        microservice_route = ""
+    if not isinstance(llm_message, str) or not llm_message.strip():
+        llm_message = "Napisz prosze jeszcze raz, a postaram sie pomoc."
     
     user_backend_message = ""
     microservice_llm_message = ""
@@ -97,6 +117,9 @@ def chat_flow(msg, header, allow_microservice=True):
 def clean_llm_json(raw_response):
     if raw_response is None:
         raise ValueError("LLM response is None. Cannot parse JSON.")
+
+    if not isinstance(raw_response, str):
+        raise TypeError(f"LLM response must be a string, got: {type(raw_response).__name__}")
 
     cleaned = raw_response.strip()
 
