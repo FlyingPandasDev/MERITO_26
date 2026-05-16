@@ -1,0 +1,11 @@
+{
+    "microservices" : {
+        "turnover_by_city" : {
+            "service_name" : "turnover_by_city",
+            "type" : "read_data",
+            "active" : true,
+            "sql" :  "WITH STORES AS (\n  SELECT \"storeId\", \"storeCity\", \"storeSize\"\n  FROM store\n),\nTURNOVER AS (\n  SELECT\n    STORES.\"storeCity\",\n    ROUND(SUM(turnover.\"amount\")::numeric, 2) AS total_turnover,\n    ROUND(SUM(turnover.\"eaches\")::numeric, 2) AS total_eaches,\n    ROUND(SUM(turnover.\"marginValue\")::numeric, 2) AS margin_value,\n    ROUND((SUM(turnover.\"marginValue\") / NULLIF(SUM(turnover.\"amount\"), 0))::numeric, 2) AS total_margin_percent,\n    ROUND(SUM(turnover.\"customer\")::numeric, 2) AS total_customer\n  FROM turnover\n  LEFT JOIN STORES\n    ON turnover.\"storeId\" = STORES.\"storeId\"\n  GROUP BY STORES.\"storeCity\"\n)\nSELECT *\nFROM TURNOVER;"
+
+        }
+    }
+}
