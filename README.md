@@ -27,16 +27,16 @@ Glowny entrypoint aplikacji:
 1. Zainstaluj zaleznosci:
 
 ```bash
-pip install -r llm/requirements.txt
+pip install -r requirements.txt
 ```
 
 2. Przygotuj plik srodowiskowy dla aplikacji:
 
 ```bash
-cp .env_example llm/.env
+cp .env_example .env
 ```
 
-3. Uzupelnij wymagane zmienne w llm/.env:
+3. Uzupelnij wymagane zmienne w .env:
 - DATABASE_URL
 - OPENROUTER_API_KEY
 - OPENROUTER_MODEL

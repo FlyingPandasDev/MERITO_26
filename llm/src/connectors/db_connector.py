@@ -1,9 +1,11 @@
 import os
-import psycopg
-from psycopg.rows import dict_row
-from dotenv import load_dotenv
+from pathlib import Path
 
-load_dotenv()
+import psycopg
+from dotenv import load_dotenv
+from psycopg.rows import dict_row
+
+load_dotenv(Path(__file__).resolve().parents[3] / ".env")
 
 def _get_database_url() -> str:
     database_url = os.getenv("DATABASE_URL")
