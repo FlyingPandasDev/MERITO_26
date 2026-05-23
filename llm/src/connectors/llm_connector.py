@@ -4,7 +4,7 @@ from pathlib import Path
 import requests
 from dotenv import load_dotenv
 
-ENV_PATH = Path(__file__).resolve().parents[2] / ".env"
+ENV_PATH = Path(__file__).resolve().parents[3] / ".env"
 load_dotenv(ENV_PATH)
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
